@@ -65,7 +65,7 @@ void print_UI(players_t *pt);
 // player functions
 void player1_move(void);
 void player2_move(void);
-int valid_move();
+char valid_move(char *);
 
 
 // grid manipulation
