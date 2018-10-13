@@ -10,6 +10,9 @@
 #define JOINT '+'
 #define X_O '#'
 #define CELL_SIZE 5
+#define GRID_SIZE 10
+#define PLAYER1 1
+#define PLAYER2 2
 
 // Coordinates of Top row
 #define TL_X 0
@@ -72,7 +75,9 @@ char valid_move(char *);
 void draw_x(int x, int y);
 void draw_o(int x, int y);
 void clear_board(void);
-int check_board(void);
-void update_points(int p, int player);
+int check_board(int pos);
+void update_board(int player, int pos);
+char update_points(int player, players_t * ptable);
+char check_winner(int player);
 
 #endif

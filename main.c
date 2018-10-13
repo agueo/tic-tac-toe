@@ -20,24 +20,39 @@ char grid[LENGTH][WIDTH] = {
 		' ',' ',' ',' ',' ','|',' ',' ',' ',' ',' ','|',' ',' ',' ',' ',' '
 };
 
+int grid_status[GRID_SIZE] = {0};
+
 int main(void)
 {
 	players_t *player_table = (players_t *) calloc(1,sizeof(players_t));
 	char isRunning;
 
 	isRunning = init_game(player_table);
+	int p_turn = 0;
 
 	while(isRunning)
 	{
-		// TODO Clear Screen and print_UI
 		print_UI(player_table);
 		player1_move();
-		// TODO Check grid for winner
-		// TODO Clear Screen and print_UI
+		p_turn = PLAYER1;
+		if(check_winner(PLAYER1))
+			if(!update_points(PLAYER1, player_table))
+				break;
+
 		print_UI(player_table);
 		player2_move();
-		// TODO check grid for winner
+		p_turn = PLAYER2;
+		if(check_winner(PLAYER2))
+			if(!update_points(PLAYER2, player_table))
+				break;
 	}
+	print_UI(player_table);
+	if(p_turn == PLAYER1)
+		printf("%s WON!\n",player_table->p1_name);
+	else if(p_turn == PLAYER2)
+		printf("%s WON!\n",player_table->p2_name);
+
+	free(player_table);
 }
 
 char init_game(players_t *pt)
@@ -192,6 +207,7 @@ void player1_move(void)
 		default:
 			break;
 	}
+	update_board(PLAYER1, v_move);
 }
 
 void player2_move(void)
@@ -245,9 +261,20 @@ void player2_move(void)
 		default:
 			break;
 	}
+	update_board(PLAYER2, v_move);
 }
 
-// Check 
+int check_board(int pos)
+{
+	return grid_status[pos] == 0 ? 1 : 0;
+}
+
+void update_board(int player, int pos)
+{
+	grid_status[pos] = player;
+}
+
+// Check that move is valid
 char valid_move(char *move)
 {
 	char valid = 0;
@@ -256,28 +283,66 @@ char valid_move(char *move)
 	{
 		if(move[1] == 'L')
 			valid = 1;
-		if(move[1] == 'M')
+		else if(move[1] == 'M')
 			valid = 2;
-		if(move[1] == 'R')
+		else if(move[1] == 'R')
 			valid = 3;
 	}
 	else if(move[0] == 'M')
 	{
 		if(move[1] == 'L')
 			valid = 4;
-		if(move[1] == 'M')
+		else if(move[1] == 'M')
 			valid = 5;
-		if(move[1] == 'R')
+		else if(move[1] == 'R')
 			valid = 6;
 	}
 	else if(move[0] == 'B')
 	{
 		if(move[1] == 'L')
 			valid = 7;
-		if(move[1] == 'M')
+		else if(move[1] == 'M')
 			valid = 8;
-		if(move[1] == 'R')
+		else if(move[1] == 'R')
 			valid = 9;
 	}
+
+	if(!check_board(valid))
+		valid = 0;
+
 	return valid;
+}
+
+char check_winner(int player)
+{
+	char winner = 0;
+	if((grid_status[1] & grid_status[2] & grid_status[3]) & player)
+		winner = 1;
+	else if((grid_status[4] & grid_status[5] & grid_status[6]) & player)
+		winner = 1;
+	else if((grid_status[7] & grid_status[8] & grid_status[9]) & player)
+		winner = 1;
+	else if((grid_status[1] & grid_status[4] & grid_status[7]) & player)
+		winner = 1;
+	else if((grid_status[2] & grid_status[5] & grid_status[8]) & player)
+		winner = 1;
+	else if((grid_status[3] & grid_status[6] & grid_status[9]) & player)
+		winner = 1;
+	else if((grid_status[1] & grid_status[5] & grid_status[9]) & player)
+		winner = 1;
+	else if((grid_status[3] & grid_status[5] & grid_status[7]) & player)
+		winner = 1;
+	else
+		winner = 0;
+	return winner;
+
+}
+
+char update_points(int player, players_t *ptable)
+{
+	if(player == PLAYER1)
+		ptable->p1_points++;
+	else if(player == PLAYER2)
+		ptable->p2_points++;
+	return 0;
 }
