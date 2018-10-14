@@ -38,6 +38,11 @@ int main(void)
 		if(check_winner(PLAYER1))
 			if(!update_points(PLAYER1, player_table))
 				break;
+		if(check_for_tie())
+		{
+			p_turn = 0;
+			break;
+		}
 
 		print_UI(player_table);
 		player2_move();
@@ -51,6 +56,8 @@ int main(void)
 		printf("%s WON!\n",player_table->p1_name);
 	else if(p_turn == PLAYER2)
 		printf("%s WON!\n",player_table->p2_name);
+	else
+		printf("It's a TIE!\n");
 
 	free(player_table);
 }
@@ -345,4 +352,13 @@ char update_points(int player, players_t *ptable)
 	else if(player == PLAYER2)
 		ptable->p2_points++;
 	return 0;
+}
+
+char check_for_tie()
+{
+	char tie = 1;
+	for(int i = 1; i < GRID_SIZE; i++)
+		if(grid_status[i] == 0)
+			tie = 0;
+	return tie;
 }

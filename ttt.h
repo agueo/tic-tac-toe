@@ -79,5 +79,7 @@ int check_board(int pos);
 void update_board(int player, int pos);
 char update_points(int player, players_t * ptable);
 char check_winner(int player);
+char check_for_tie(void);
+
 
 #endif
